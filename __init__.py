@@ -1,1 +1,2 @@
-from .vtsim2 import *
+from vtsim import vtsim
+#from .vtsim2 import *
