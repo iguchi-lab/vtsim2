@@ -24,8 +24,8 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'vtsimc',
-        ['vtsimc2.cpp'],
+        'vtsimc2',
+        ['vtsimc2.vtsimc2.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -105,7 +105,7 @@ setup(
     url='',
     description='sample',
     long_description='',
-    #ext_modules=ext_modules,
+    ext_modules=ext_modules,
     packages=['vtsim2'],
     install_requires=['pybind11>=2.4'],
     setup_requires=['pybind11>=2.4'],
