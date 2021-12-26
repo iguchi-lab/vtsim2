@@ -98,7 +98,7 @@ class BuildExt(build_ext):
 
 
 setup( 
-    name='vtsim',
+    name='vtsimc',
     version=__version__,
     author='Masato IGIUCHI',
     author_email='',
