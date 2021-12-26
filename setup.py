@@ -25,7 +25,7 @@ class get_pybind_include(object):
 ext_modules = [
     Extension(
         'vtsimc2',
-        ['vtsimc2.vtsimc2.cpp'],
+        ['vtsimc2.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
