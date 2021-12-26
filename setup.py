@@ -25,7 +25,7 @@ class get_pybind_include(object):
 ext_modules = [
     Extension(
         'vtsimc',
-        ['vtsimc.vtsimc2.cpp'],
+        ['vtsimc2.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -98,7 +98,7 @@ class BuildExt(build_ext):
 
 
 setup( 
-    name='vtsimc',
+    name='vtsim2',
     version=__version__,
     author='Masato IGIUCHI',
     author_email='',
