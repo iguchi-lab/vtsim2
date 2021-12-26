@@ -1,5 +1,5 @@
 #include <stdio.h>
 
-void main(void){
+void hello_c(void){
     printf('hello world from C');
 }
