@@ -106,7 +106,7 @@ setup(
     description='sample',
     long_description='',
     ext_modules=ext_modules,
-    packages=['vtsim2'],
+    packages=['vtsim2', 'vtsimc2'],
     install_requires=['pybind11>=2.4'],
     setup_requires=['pybind11>=2.4'],
     cmdclass={'build_ext': BuildExt},
