@@ -230,7 +230,7 @@ def make_calc(length, t_step, sn, vn, tn):
     for i, n in enumerate([n for n in sn if 'capa' in n]):                                                  #熱容量の設定のあるノード
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
         nodes.append([SN_NONE, SN_NONE, SN_DLY])                                                            #計算フラグ
-        sn_capa_set.append([node[d_node(n['name'])], node[n['name']], n['capa']])                           #熱容量の設定
+        sn_capa_set.append([node[d_node(n['name'])], node[n['name']]])                                      #熱容量の設定
 
         t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワーク
         tn_simple_set.append([len(tn) + i, n['capa'] / t_step])                                             #コンダクタンス
