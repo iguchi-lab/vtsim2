@@ -197,43 +197,52 @@ def make_calc(length, t_step, sn, vn, tn):
     for i, n in enumerate(sn):                                                                              #sn
         node[n['name']] = i                                                                                 #ノード番号
         nodes.append([n['v_flag'], n['c_flag'], n['t_flag']])                                               #計算フラグ
-        if 'p' in n:        sn_P_set.append([i, to_list(n['p'], length)])                                   #圧力、行列で設定可能                                                 
-        if 'c' in n:        sn_C_set.append([i, to_list(n['c'], length)])                                   #濃度、行列で設定可能
-        if 't' in n:        sn_T_set.append([i, to_list(n['t'], length)])                                   #温度、行列で設定可能
-        if 'h_sr' in n:     sn_h_sr_set.append([i, to_list(n['h_sr'], length)])                             #日射量、行列で設定可能
+
+        if 'p' in n:            sn_P_set.append([i, to_list(n['p'],     length)])                           #圧力、行列で設定可能                                                 
+        if 'c' in n:            sn_C_set.append([i, to_list(n['c'],     length)])                           #濃度、行列で設定可能
+        if 't' in n:            sn_T_set.append([i, to_list(n['t'],     length)])                           #温度、行列で設定可能
+        if 'h_sr' in n:      sn_h_sr_set.append([i, to_list(n['h_sr'],  length)])                           #日射量、行列で設定可能
         if 'h_inp' in n:    sn_h_inp_set.append([i, to_list(n['h_inp'], length)])                           #発熱、行列で設定可能
-        if 'v' in n:        sn_v_set.append([i, to_list(n['v'], length)])                                   #気積、行列で設定可能
-        if 'm' in n:        sn_m_set.append([i, to_list(n['m'], length)])                                   #発生量、行列で設定可能
-        if 'beta' in n:     sn_beta_set.append([i, to_list(n['beta'], length)])                             #濃度減少率、行列で設定可能
+        if 'v' in n:            sn_v_set.append([i, to_list(n['v'],     length)])                           #気積、行列で設定可能
+        if 'm' in n:            sn_m_set.append([i, to_list(n['m'],     length)])                           #発生量、行列で設定可能
+        if 'beta' in n:      sn_beta_set.append([i, to_list(n['beta'],  length)])                           #濃度減少率、行列で設定可能
 
     for i, nt in enumerate(vn):                                                                             #vn
         h1 = nt['h1'] if 'h1' in nt else 0.0                                                                #高さ1、行列設定不可
         h2 = nt['h2'] if 'h2' in nt else 0.0                                                                #高さ2、行列設定不可
         v_nets.append([node[nt['name1']], node[nt['name2']], nt['type'], h1, h2])                           #ネットワークタイプ＆高さ
         
-        if nt['type'] == VN_SIMPLE:     vn_simple_set.append([i, to_list(nt['alpha'], length), to_list(nt['area'], length)])    #単純開口
-        if nt['type'] == VN_GAP:        vn_gap_set.append([i, to_list(nt['a'], length), to_list(nt['n'], length)])              #隙間
-        if nt['type'] == VN_FAN:        vn_fan_set.append([i, nt['qmax'], nt['pmax'], nt['q1'], nt['p1']])  #ファン
+        if nt['type'] == VN_SIMPLE:     vn_simple_set.append([i, to_list(nt['alpha'], length), 
+                                                                 to_list(nt['area'],  length)])             #単純開口、行列で設定可能
+        if nt['type'] == VN_GAP:           vn_gap_set.append([i, to_list(nt['a'],     length), 
+                                                                 to_list(nt['n'],     length)])             #隙間、行列で設定可能
+        if nt['type'] == VN_FAN:           vn_fan_set.append([i, to_list(nt['qmax'],  length), 
+                                                                 to_list(nt['pmax'],  length), 
+                                                                 to_list(nt['q1'],    length),
+                                                                 to_list(nt['p1'],    length)])             #ファン、行列で設定可能
 
-        if 'vol' in nt: vn_fix_set.append([i, nt['vol']])                                                   #風量固定値
-        if 'eta' in nt: vn_eta_set.append([i, nt['eta']])                                                   #粉じん除去率
-        else:           vn_eta_set.append([i, [0.0] * length])
+        if 'vol' in nt:                    vn_fix_set.append([i, to_list(nt['vol'],   length)])             #風量固定値、行列で設定可能
+        if 'eta' in nt:                    vn_eta_set.append([i, to_list(nt['eta'],   length)])               
+        else:                              vn_eta_set.append([i, to_list(0.0,         length)])             #粉じん除去率、行列で設定可能
 
     for i, nt in enumerate(tn):                                                                             #tn
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
 
-        if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, nt['cdtc']])                               #コンダクタンス
-        if nt['type'] == TN_SOLAR:      tn_solar_set.append([i, nt['ms']])                                  #日射熱取得率
-        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], nt['rg'], 
-                                                              nt['phi_0'], nt['cof_r'], nt['cof_phi']])     #地盤熱応答
+        if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  length)])             #コンダクタンス、行列設定可能
+        if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    length)])             #日射熱取得率、行列設定可能
+        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], 
+                                                                 nt['rg'], 
+                                                                 nt['phi_0'], 
+                                                                 nt['cof_r'], 
+                                                                 nt['cof_phi']])                            #地盤熱応答、行列設定不可
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):                                                  #熱容量の設定のあるノード
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
         nodes.append([SN_NONE, SN_NONE, SN_DLY])                                                            #計算フラグ
         sn_capa_set.append([node[d_node(n['name'])], node[n['name']]])                                      #熱容量の設定
 
-        t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワーク
-        tn_simple_set.append([len(tn) + i, n['capa'] / t_step])                                             #コンダクタンス
+        t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワークの設定
+        tn_simple_set.append([len(tn) + i, to_list(n['capa'] / t_step, length)])                            #コンダクタンス（熱容量）
 
     return node, length, nodes, v_nets, t_nets,\
            sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
