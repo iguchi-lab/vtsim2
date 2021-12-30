@@ -29,10 +29,10 @@ VN_FIX      = 2           #換気回路網：風量固定
 VN_AIRCON   = 3           #換気回路網：エアコン=風量固定、換気による熱移動=0
 VN_FAN      = 4           #換気回路網：送風ファン、PQ特性
 
-TH_SIMPLE   = 0           #熱回路網：単純熱回路
-TH_AIRCON   = 1           #熱回路網：エアコン、熱量収支付け替え
-TH_SOLAR    = 2           #熱回路網：日射取得
-TH_GROUND   = 3           #熱回路網：地盤
+TN_SIMPLE   = 0           #熱回路網：単純熱回路
+TN_AIRCON   = 1           #熱回路網：エアコン、熱量収支付け替え
+TN_SOLAR    = 2           #熱回路網：日射取得
+TN_GROUND   = 3           #熱回路網：地盤
 
 node = lambda name, v_flag, c_flag, t_flag: {'name': name, 'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}        #ノードの設定
 net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}                                           #ネットワークの設定
@@ -189,7 +189,7 @@ def make_calc(length, t_step, sn, vn, tn):
         node[d_node(n['name'])] = len(sn) + i
         nodes.append([NONE, NONE, DLY])
 
-        t_nets.append([node[n['name']], node[d_node(n['name'])], TH_SIMPLE])
+        t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])
         tn_simple_set.append([len(tn) + i, n['capa'] / t_step])
 
         sn_capa_set.append([node[d_node(n['name'])], node[n['name']], n['capa']])
