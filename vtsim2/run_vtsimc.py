@@ -29,10 +29,10 @@ VN_FIX      = 2           #換気回路網：風量固定
 VN_AIRCON   = 3           #換気回路網：エアコン=風量固定、換気による熱移動=0
 VN_FAN      = 4           #換気回路網：送風ファン、PQ特性
 
-TN_SIMPLE   = 0           #熱回路網：単純熱回路
-TN_AIRCON   = 1           #熱回路網：エアコン、熱量収支付け替え
-TN_SOLAR    = 2           #熱回路網：日射取得
-TN_GROUND   = 3           #熱回路網：地盤
+TN_SIMPLE: int = 0           #熱回路網：単純熱回路
+TN_AIRCON: int = 1           #熱回路網：エアコン、熱量収支付け替え
+TN_SOLAR:  int = 2           #熱回路網：日射取得
+TN_GROUND: int = 3           #熱回路網：地盤
 
 node = lambda name, v_flag, c_flag, t_flag: {'name': name, 'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}        #ノードの設定
 net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}                                           #ネットワークの設定
@@ -40,8 +40,9 @@ net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}   
 r_df = lambda fn:     pd.read_csv(fn, index_col = 0, parse_dates = True).fillna(method = 'bfill')                       #csvファイルの読み込み
 nc   = lambda id, v:  np.array([v] * len(id))                                                                           #idの長さ分の値value
 nd   = lambda df, cl: np.array(df[cl])                                                                                  #dfの列clを設定
+
 ix   = lambda length: pd.date_range(datetime(2021, 1, 1, 0, 0, 0), 
-                                    datetime(2021, 1, 1, 0, 0, 0) + timedelta(seconds = length), freq='1s')
+                                    datetime(2021, 1, 1, 0, 0, 0) + timedelta(seconds = length), freq='1s')             #長さlength、1s毎の時刻
 
 d_node  = lambda name: name + '_c'                                                                                      #遅延ノードの名前作成
 cap     = lambda v, t_step: v * lib.get_rho(20.0) * lib.Air_Cp / t_step                                                 #空気の熱容量の設定
@@ -172,18 +173,18 @@ def make_calc(length, t_step, sn, vn, tn):
         h1 = nt['h1'] if 'h1' in nt else 0.0
         h2 = nt['h1'] if 'h1' in nt else 0.0
         v_nets.append([node[nt['name1']], node[nt['name2']], nt['type'], h1, h2])
-        if nt['type'] == 'simple':          vn_simple_set.append([i, nt['alpha'], nt['area']])
-        if nt['type'] == 'gap':             vn_gap_set.append([i, nt['a'], nt['n']])
-        if nt['type'] == 'fan':             vn_fan_set.append([i, nt['qmax'], nt['pmax'], nt['q1'], nt['p1']])
+        if nt['type'] == VN_SIMPLE:          vn_simple_set.append([i, nt['alpha'], nt['area']])
+        if nt['type'] == VN_GAP:             vn_gap_set.append([i, nt['a'], nt['n']])
+        if nt['type'] == VN_FAN:             vn_fan_set.append([i, nt['qmax'], nt['pmax'], nt['q1'], nt['p1']])
         if 'vol' in nt: vn_fix_set.append([i, nt['vol']])
         if 'eta' in nt: vn_eta_set.append([i, nt['eta']]) 
         else: vn_eta_set.append([i, [0.0] * length])
 
     for i, nt in enumerate(tn):
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])
-        if nt['type'] == 'simple':          tn_simple_set.append([i, nt['cdtc']])
-        if nt['type'] == 'solar':           tn_solar_set.append([i, nt['ms']])
-        if nt['type'] == 'ground':          tn_ground_set.append([i, nt['area'], nt['rg'], nt['phi_0'], nt['cof_r'], nt['cof_phi']])
+        if nt['type'] == TN_SIMPLE:          tn_simple_set.append([i, nt['cdtc']])
+        if nt['type'] == TN_SOLAR:           tn_solar_set.append([i, nt['ms']])
+        if nt['type'] == TN_GROUND:          tn_ground_set.append([i, nt['area'], nt['rg'], nt['phi_0'], nt['cof_r'], nt['cof_phi']])
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):
         node[d_node(n['name'])] = len(sn) + i
