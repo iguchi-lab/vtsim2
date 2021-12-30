@@ -73,6 +73,8 @@ ix   = lambda length:                       pd.date_range(datetime(2021, 1, 1, 0
 
 d_node  = lambda name:                      name + '_c'                                                 #遅延ノードの名前作成
 
+to_list = lambda v, length:                 [float[v] * length] if type(v) != list else v               #リストでなければlength分の長さのリストにする
+
 ###############################################################################
 # defin function
 ###############################################################################
@@ -195,14 +197,14 @@ def make_calc(length, t_step, sn, vn, tn):
     for i, n in enumerate(sn):                                                                              #sn
         node[n['name']] = i                                                                                 #ノード番号
         nodes.append([n['v_flag'], n['c_flag'], n['t_flag']])                                               #計算フラグ
-        if 'p' in n:     sn_P_set.append([i, n['p']])                                                       #圧力
-        if 'c' in n:     sn_C_set.append([i, n['c']])                                                       #濃度
-        if 't' in n:     sn_T_set.append([i, n['t']])                                                       #温度
-        if 'h_sr' in n:  sn_h_sr_set.append([i, n['h_sr']])                                                 #日射熱取得
-        if 'h_inp' in n: sn_h_inp_set.append([i, n['h_inp']])                                               #発熱
-        if 'v' in n:     sn_v_set.append([i, n['v']])                                                       #気積
-        if 'm' in n:     sn_m_set.append([i, n['m']])                                                       #発生量
-        if 'beta' in n:  sn_beta_set.append([i, n['beta']])                                                 #濃度減少率
+        if 'p' in n:        sn_P_set.append([i, to_list(n['p'], length)])                                   #圧力                                                 
+        if 'c' in n:        sn_C_set.append([i, to_list(n['c'], length)])                                   #濃度
+        if 't' in n:        sn_T_set.append([i, to_list(n['t'], length)])                                   #温度
+        if 'h_sr' in n:     sn_h_sr_set.append([i, to_list(n['h_sr'], length)])                             #日射量
+        if 'h_inp' in n:    sn_h_inp_set.append([i, to_list(n['h_inp'], length)])                           #発熱
+        if 'v' in n:        sn_v_set.append([i, to_list(n['v'], length)])                                   #気積
+        if 'm' in n:        sn_m_set.append([i, to_list(n['m'], length)])                                   #発生量
+        if 'beta' in n:  sn_beta_set.append([i, to_list(n['beta'], length)])                                #濃度減少率
 
     for i, nt in enumerate(vn):                                                                             #vn
         h1 = nt['h1'] if 'h1' in nt else 0.0                                                                #高さ1
@@ -228,7 +230,7 @@ def make_calc(length, t_step, sn, vn, tn):
     for i, n in enumerate([n for n in sn if 'capa' in n]):                                                  #熱容量の設定のあるノード
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
         nodes.append([SN_NONE, SN_NONE, SN_DLY])                                                            #計算フラグ
-        sn_capa_set.append([node[d_node(n['name'])], node[n['name']], n['capa']])                           #熱容量の設定
+        #sn_capa_set.append([node[d_node(n['name'])], node[n['name']], n['capa']])                           #熱容量の設定
 
         t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワーク
         tn_simple_set.append([len(tn) + i, n['capa'] / t_step])                                             #コンダクタンス
