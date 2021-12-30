@@ -18,10 +18,10 @@ SOR_ERR     = 1e-6        #SOR法の許容残差
 SOLVE_LU    = 0           #LU分解法で計算  
 SOLVE_SOR   = 1           #SOR法で計算
 
-FLAG_NONE   = 0           #計算しない
-FLAG_CALC   = 1           #計算する
-FLAG_FIX    = 2           #固定値（計算には利用するが、更新しない）
-FLAG_DLY    = 3           #遅延（熱容量計算用）
+NONE   = 0           #計算しない
+CALC   = 1           #計算する
+FIX    = 2           #固定値（計算には利用するが、更新しない）
+DLY    = 3           #遅延（熱容量計算用）
 
 VN_SIMPLE   = 0           #換気回路網：単純開口
 VN_GAP      = 1           #換気回路網：隙間
@@ -33,10 +33,6 @@ TH_SIMPLE   = 0           #熱回路網：単純熱回路
 TH_AIRCON   = 1           #熱回路網：エアコン、熱量収支付け替え
 TH_SOLAR    = 2           #熱回路網：日射取得
 TH_GROUND   = 3           #熱回路網：地盤
-
-n_trans = {None: FLAG_NONE, 'CALC': FLAG_CALC, 'FIX': FLAG_FIX, 'DLY': FLAG_DLY}
-v_trans = {'simple': VN_SIMPLE, 'gap': VN_GAP, 'fix': VN_FIX, 'aircon': VN_AIRCON, 'fan': VN_FAN}
-t_trans = {'simple': TH_SIMPLE, 'aircon': TH_AIRCON, 'solar': TH_SOLAR, 'ground': TH_GROUND}
 
 node = lambda name, v_flag, c_flag, t_flag: {'name': name, 'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}        #ノードの設定
 net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}                                           #ネットワークの設定
@@ -162,7 +158,7 @@ def make_calc(length, t_step, sn, vn, tn):
 
     for i, n in enumerate(sn):    
         node[n['name']] = i
-        nodes.append([n_trans[n['v_flag']], n_trans[n['c_flag']], n_trans[n['t_flag']]])
+        nodes.append([n['v_flag'], n['c_flag'], n['t_flag']])
         if 'p' in n:     sn_P_set.append([i, n['p']]) 
         if 'c' in n:     sn_C_set.append([i, n['c']]) 
         if 't' in n:     sn_T_set.append([i, n['t']])
@@ -175,7 +171,7 @@ def make_calc(length, t_step, sn, vn, tn):
     for i, nt in enumerate(vn):
         h1 = nt['h1'] if 'h1' in nt else 0.0
         h2 = nt['h1'] if 'h1' in nt else 0.0
-        v_nets.append([node[nt['name1']], node[nt['name2']], v_trans[nt['type']], h1, h2])
+        v_nets.append([node[nt['name1']], node[nt['name2']], nt['type'], h1, h2])
         if nt['type'] == 'simple':          vn_simple_set.append([i, nt['alpha'], nt['area']])
         if nt['type'] == 'gap':             vn_gap_set.append([i, nt['a'], nt['n']])
         if nt['type'] == 'fan':             vn_fan_set.append([i, nt['qmax'], nt['pmax'], nt['q1'], nt['p1']])
@@ -184,14 +180,14 @@ def make_calc(length, t_step, sn, vn, tn):
         else: vn_eta_set.append([i, [0.0] * length])
 
     for i, nt in enumerate(tn):
-        t_nets.append([node[nt['name1']], node[nt['name2']], t_trans[nt['type']]])
+        t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])
         if nt['type'] == 'simple':          tn_simple_set.append([i, nt['cdtc']])
         if nt['type'] == 'solar':           tn_solar_set.append([i, nt['ms']])
         if nt['type'] == 'ground':          tn_ground_set.append([i, nt['area'], nt['rg'], nt['phi_0'], nt['cof_r'], nt['cof_phi']])
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):
         node[d_node(n['name'])] = len(sn) + i
-        nodes.append([FLAG_NONE, FLAG_NONE, FLAG_DLY])
+        nodes.append([NONE, NONE, DLY])
 
         t_nets.append([node[n['name']], node[d_node(n['name'])], TH_SIMPLE])
         tn_simple_set.append([len(tn) + i, n['capa'] / t_step])
