@@ -187,7 +187,7 @@ def make_calc(length, t_step, sn, vn, tn):
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):
         node[d_node(n['name'])] = len(sn) + i
-        nodes.append([N_NONE, N_NONE, N_DLY])
+        nodes.append([SN_NONE, SN_NONE, SN_DLY])
 
         t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])
         tn_simple_set.append([len(tn) + i, n['capa'] / t_step])
