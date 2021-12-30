@@ -93,7 +93,7 @@ def run_calc(ix, sn, **kwargs):                                                 
 
     node, length, nodes, v_nets, t_nets,\
     sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
-    vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,\
+    vn_v_set, vn_m_set, vn_beta_set,\
     vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,\
     tn_simple_set, tn_solar_set, tn_ground_set = make_calc(len(ix), t_step, sn, vn, tn)                 #計算データの作成
 
@@ -122,7 +122,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     s_time = time.time()
     p, c, t, qv, qt1, qt2 = vtc.calc(sts, length, t_step, nodes, v_nets, t_nets, 
                                      sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,
-                                     vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,
+                                     vn_v_set, vn_m_set, vn_beta_set,
                                      vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,
                                      tn_simple_set, tn_solar_set, tn_ground_set)                                            #計算
     print('finish vtsim calc')
@@ -237,6 +237,6 @@ def make_calc(length, t_step, sn, vn, tn):
 
     return node, length, nodes, v_nets, t_nets,\
            sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
-           sn_v_set, sn_capa_set, sn_m_set, sn_beta_set,\
+           sn_v_set, sn_m_set, sn_beta_set,\
            vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,\
            tn_simple_set, tn_solar_set, tn_ground_set
