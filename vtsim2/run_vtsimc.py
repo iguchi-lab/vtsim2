@@ -174,8 +174,8 @@ def output_calc(opt, p, c, t, qv, qt1, qt2, ix, n_columns, v_columns, t_columns)
             for cl in graph.columns:
                 a.plot(graph[cl], linewidth = 1.0, label = cl)
             a.legend(ncol = 5, bbox_to_anchor = (0, 1.05, 1, 0), 
-                     loc = 'lower left', borderaxespad = 0, facecolor = 'w', edgecolor = 'k')
-            a.set_title(graphtitle[i], loc='right')
+                     loc = 'lower right', borderaxespad = 0, facecolor = 'w', edgecolor = 'k')
+            a.set_title(graphtitle[i], loc='left')
 
     return df_p, df_c, df_t, df_qv, df_qt1, df_qt2
 
