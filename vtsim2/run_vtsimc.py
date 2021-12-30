@@ -8,26 +8,26 @@ import matplotlib.pyplot as plt
 import vtsimc as vtc
 import vtsim2.archenvlib as lib
 
-STEP_P      = 1e-6        #偏微分時の圧力変化
-VENT_ERR    = 1e-6        #換気回路網の許容残差
-STEP_T      = 1e-6        #偏微分時の温度変化
-THRM_ERR    = 1e-6        #熱回路網の許容残差
-SOR_RATIO   = 0.9         #SOR法の緩和係数
-SOR_ERR     = 1e-6        #SOR法の許容残差
+STEP_P         = 1e-6        #偏微分時の圧力変化
+VENT_ERR       = 1e-6        #換気回路網の許容残差
+STEP_T         = 1e-6        #偏微分時の温度変化
+THRM_ERR       = 1e-6        #熱回路網の許容残差
+SOR_RATIO      = 0.9         #SOR法の緩和係数
+SOR_ERR        = 1e-6        #SOR法の許容残差
 
-SOLVE_LU    = 0           #LU分解法で計算  
-SOLVE_SOR   = 1           #SOR法で計算
+SOLVE_LU:  int = 0           #LU分解法で計算  
+SOLVE_SOR: int = 1           #SOR法で計算
 
-SN_NONE     = 0           #計算しない
-SN_CALC     = 1           #計算する
-SN_FIX      = 2           #固定値（計算には利用するが、更新しない）
-SN_DLY      = 3           #遅延（熱容量計算用）
+SN_NONE:   int = 0           #計算しない
+SN_CALC:   int = 1           #計算する
+SN_FIX:    int = 2           #固定値（計算には利用するが、更新しない）
+SN_DLY:    int = 3           #遅延（熱容量計算用）
 
-VN_SIMPLE   = 0           #換気回路網：単純開口
-VN_GAP      = 1           #換気回路網：隙間
-VN_FIX      = 2           #換気回路網：風量固定
-VN_AIRCON   = 3           #換気回路網：エアコン=風量固定、換気による熱移動=0
-VN_FAN      = 4           #換気回路網：送風ファン、PQ特性
+VN_SIMPLE: int = 0           #換気回路網：単純開口
+VN_GAP:    int = 1           #換気回路網：隙間
+VN_FIX:    int = 2           #換気回路網：風量固定
+VN_AIRCON: int = 3           #換気回路網：エアコン=風量固定、換気による熱移動=0
+VN_FAN:    int = 4           #換気回路網：送風ファン、PQ特性
 
 TN_SIMPLE: int = 0           #熱回路網：単純熱回路
 TN_AIRCON: int = 1           #熱回路網：エアコン、熱量収支付け替え
