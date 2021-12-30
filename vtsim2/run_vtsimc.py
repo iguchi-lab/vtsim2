@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
-import vtsimc as vt
+import vtsimc as vtc
 
 STEP_P      = 1e-6        #偏微分時の圧力変化
 VENT_ERR    = 1e-6        #換気回路網の許容残差
@@ -91,11 +91,11 @@ def run_calc(ix, sn, **kwargs):
 
     print('start vtsim calc')
     start = time.time()
-    p, c, t, qv, qt1, qt2 = vt.calc(sts, length, t_step, nodes, v_nets, t_nets, 
-                                    sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,
-                                    vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,
-                                    vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,
-                                    tn_simple_set, tn_solar_set, tn_ground_set)
+    p, c, t, qv, qt1, qt2 = vtc.calc(sts, length, t_step, nodes, v_nets, t_nets, 
+                                     sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,
+                                     vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,
+                                     vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,
+                                     tn_simple_set, tn_solar_set, tn_ground_set)
     print('finish vtsim calc')
     e_time = time.time() - start
     print("calc time:{0}".format(e_time  * 1000) + "[ms]")
