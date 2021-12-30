@@ -13,6 +13,8 @@ Solar_I = 1365                                                                  
 
 #lambda function
 #湿り空気の状態
+get_rho = lambda sita:   353.25 / (sita + 273.15)                                       #空気の密度rhoを返す  
+
 T      = lambda t: t + 273.15                                                           #絶対温度
 
 T_dash = lambda t: T(100.0) / T(t)                                                      #飽和水蒸気の計算に用いる温度
