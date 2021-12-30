@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 import vtsimc as vtc
+import archenvlib as lib
 
 STEP_P      = 1e-6        #偏微分時の圧力変化
 VENT_ERR    = 1e-6        #換気回路網の許容残差
@@ -14,8 +15,8 @@ THRM_ERR    = 1e-6        #熱回路網の許容残差
 SOR_RATIO   = 0.9         #SOR法の緩和係数
 SOR_ERR     = 1e-6        #SOR法の許容残差
 
-SOLVE_LU    = 0
-SOLVE_SOR   = 1
+SOLVE_LU    = 0           #LU分解法で計算  
+SOLVE_SOR   = 1           #SOR法で計算
 
 FLAG_NONE   = 0           #計算しない
 FLAG_CALC   = 1           #計算する
@@ -33,40 +34,37 @@ TH_AIRCON   = 1           #熱回路網：エアコン、熱量収支付け替�
 TH_SOLAR    = 2           #熱回路網：日射取得
 TH_GROUND   = 3           #熱回路網：地盤
 
-get_rho = lambda sita:   353.25 / (sita + 273.15)       #空気の密度rhoを返す                                                                                                             #重力加速度 kg/s2
-Rho20 = get_rho(20)                                     #空気の密度 kg/m3
-Air_Cp = 1006      
-
 n_trans = {None: FLAG_NONE, 'CALC': FLAG_CALC, 'FIX': FLAG_FIX, 'DLY': FLAG_DLY}
 v_trans = {'simple': VN_SIMPLE, 'gap': VN_GAP, 'fix': VN_FIX, 'aircon': VN_AIRCON, 'fan': VN_FAN}
 t_trans = {'simple': TH_SIMPLE, 'aircon': TH_AIRCON, 'solar': TH_SOLAR, 'ground': TH_GROUND}
 
-node = lambda name, v_flag, c_flag, t_flag: {'name': name, 'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}
-net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}
-r_df = lambda fn:     pd.read_csv(fn, index_col = 0, parse_dates = True).fillna(method = 'bfill')
-nc   = lambda id, v:  np.array([v] * len(id)) 
-nd   = lambda df, cl: np.array(df[cl])
-ix   = lambda length:  pd.date_range(datetime(2021, 1, 1, 0, 0, 0), datetime(2021, 1, 1, 0, 0, 0) + timedelta(seconds = length), freq='1s')
+node = lambda name, v_flag, c_flag, t_flag: {'name': name, 'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}        #ノードの設定
+net  = lambda name1, name2, tpe:{'name1': name1, 'name2': name2, 'type': tpe}                                           #ネットワークの設定
+
+r_df = lambda fn:     pd.read_csv(fn, index_col = 0, parse_dates = True).fillna(method = 'bfill')                       #csvファイルの読み込み
+nc   = lambda id, v:  np.array([v] * len(id))                                                                           #idの長さ分の値value
+nd   = lambda df, cl: np.array(df[cl])                                                                                  #dfの列clを設定
+ix   = lambda length: pd.date_range(datetime(2021, 1, 1, 0, 0, 0), 
+                                    datetime(2021, 1, 1, 0, 0, 0) + timedelta(seconds = length), freq='1s')
 
 d_node  = lambda name: name + '_c'                                                                                      #遅延ノードの名前作成
-cap     = lambda v, t_step: v * Rho20 * Air_Cp / t_step
+cap     = lambda v, t_step: v * lib.get_rho(20.0) * lib.Air_Cp / t_step                                                 #空気の熱容量の設定
 
-def run_calc(ix, sn, **kwargs):
+def run_calc(ix, sn, **kwargs):                                                                                         #はじめに呼び出される関数
 
-    sts    = kwargs['sts'] if 'sts' in kwargs else [SOLVE_LU, STEP_P, VENT_ERR, STEP_T, THRM_ERR, SOR_RATIO, SOR_ERR]
-    vn  = kwargs['vn']     if 'vn'  in kwargs else []
-    tn  = kwargs['tn']     if 'tn'  in kwargs else [] 
-    opf = kwargs['output'] if 'output' in kwargs else 2
+    sts = kwargs['sts']    if 'sts' in kwargs else [SOLVE_LU, STEP_P, VENT_ERR, STEP_T, THRM_ERR, SOR_RATIO, SOR_ERR]   #計算ステータスの読み込み
+    vn  = kwargs['vn']     if 'vn'  in kwargs else []                                                                   #vnの読み込み
+    tn  = kwargs['tn']     if 'tn'  in kwargs else []                                                                   #tnの読み込み
+    opf = kwargs['output'] if 'output' in kwargs else 2                                                                 
 
-    t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000 
-
-    length  = len(ix)
+    t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000                                           #t_stepの読み込み
+    length  = len(ix)                                                                                                   #データ長さの設定
 
     node, length, nodes, v_nets, t_nets,\
     sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
     vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,\
     vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,\
-    tn_simple_set, tn_solar_set, tn_ground_set = make_calc(length, t_step, sn, vn, tn)
+    tn_simple_set, tn_solar_set, tn_ground_set = make_calc(length, t_step, sn, vn, tn)                                  #計算データの作成
 
     print('sts          : ', sts)
 
@@ -102,8 +100,8 @@ def run_calc(ix, sn, **kwargs):
 
     node_swap = {v: k for k, v in node.items()}
 
-    n_columns   = [node_swap[i] for i in range(len(nodes))]
-    v_columns  = [str(i) + " " + node_swap[v_nets[i][0]] + "->" + node_swap[v_nets[i][1]] for i in range(len(v_nets))]
+    n_columns = [node_swap[i] for i in range(len(nodes))]
+    v_columns = [str(i) + " " + node_swap[v_nets[i][0]] + "->" + node_swap[v_nets[i][1]] for i in range(len(v_nets))]
     t_columns = [str(i) + " " + node_swap[t_nets[i][0]] + "->" + node_swap[t_nets[i][1]] for i in range(len(t_nets))]
 
     df_p, df_c, df_t, df_qv, df_qt1, df_qt2 = output_calc(opf, p, c, t, qv, qt1, qt2, ix, n_columns, v_columns, t_columns)
