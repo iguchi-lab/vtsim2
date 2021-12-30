@@ -73,7 +73,7 @@ ix   = lambda length:                       pd.date_range(datetime(2021, 1, 1, 0
 
 d_node  = lambda name:                      name + '_c'                                                 #遅延ノードの名前作成
 
-to_list = lambda v, length:                 [float(v) * length] if type(v) != list else v               #リストでなければlength分の長さのリストにする
+to_list = lambda v, length:                 [float(v)] * length if type(v) != list else v               #リストでなければlength分の長さのリストにする
 
 ###############################################################################
 # defin function
