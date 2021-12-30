@@ -164,18 +164,20 @@ def output_calc(opt, p, c, t, qv, qt1, qt2, ix, n_columns, v_columns, t_columns)
         df_qt2.to_csv('thrm_qt2.csv', encoding = 'utf_8_sig')
 
     if opt > 1:
-        graphlist  = [df_p, df_c, df_t, df_qv, df_qt1, df_qt2]
-        graphtitle = ['圧力', '濃度', '温度', '風量', '熱量1', '熱量2']
-        fig = plt.figure(facecolor = 'w', figsize = (18, len(graphlist) * 4))
+        graph_list  =  [df_p, df_c, df_t, df_qv, df_qt1, df_qt2]
+        graph_title =  ['圧力', '濃度', '温度', '風量', '熱量1', '熱量2']
+        graph_ylabel = ['[Pa]', '[個/L]', '[℃]', '[m3/s]', '[W]', '[W]']
+        fig = plt.figure(facecolor = 'w', figsize = (18, len(graph_list) * 4))
         fig.subplots_adjust(wspace = -0.1, hspace=0.9)
 
-        for i, graph in enumerate(graphlist):
-            a = fig.add_subplot(len(graphlist), 1, i + 1)
+        for i, graph in enumerate(graph_list):
+            a = fig.add_subplot(len(graph_list), 1, i + 1)
             for cl in graph.columns:
                 a.plot(graph[cl], linewidth = 1.0, label = cl)
             a.legend(ncol = 5, bbox_to_anchor = (0, 1.05, 1, 0), 
                      loc = 'lower right', borderaxespad = 0, facecolor = 'w', edgecolor = 'k')
-            a.set_title(graphtitle[i], loc='left')
+            a.set_title(graph_title[i], loc='left')
+            a.set_ylabel(graph_ylabel[i])
 
     return df_p, df_c, df_t, df_qv, df_qt1, df_qt2
 
