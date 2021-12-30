@@ -18,10 +18,10 @@ SOR_ERR     = 1e-6        #SOR法の許容残差
 SOLVE_LU    = 0           #LU分解法で計算  
 SOLVE_SOR   = 1           #SOR法で計算
 
-N_NONE      = 0           #計算しない
-N_CALC      = 1           #計算する
-N_FIX       = 2           #固定値（計算には利用するが、更新しない）
-N_DLY       = 3           #遅延（熱容量計算用）
+SN_NONE     = 0           #計算しない
+SN_CALC     = 1           #計算する
+SN_FIX      = 2           #固定値（計算には利用するが、更新しない）
+SN_DLY      = 3           #遅延（熱容量計算用）
 
 VN_SIMPLE   = 0           #換気回路網：単純開口
 VN_GAP      = 1           #換気回路網：隙間
