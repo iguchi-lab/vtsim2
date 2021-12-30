@@ -167,7 +167,7 @@ def output_calc(opt, p, c, t, qv, qt1, qt2, ix, n_columns, v_columns, t_columns)
         graphlist  = [df_p, df_c, df_t, df_qv, df_qt1, df_qt2]
         graphtitle = ['圧力', '濃度', '温度', '風量', '熱量1', '熱量2']
         fig = plt.figure(facecolor = 'w', figsize = (18, len(graphlist) * 4))
-        fig.subplots_adjust(wspace = -0.1, hspace=0.7)
+        fig.subplots_adjust(wspace = -0.1, hspace=0.9)
 
         for i, graph in enumerate(graphlist):
             a = fig.add_subplot(len(graphlist), 1, i + 1)
