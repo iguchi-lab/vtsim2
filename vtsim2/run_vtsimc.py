@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 import vtsimc as vtc
-import archenvlib as lib
+import vtsim2.archenvlib as lib
 
 STEP_P      = 1e-6        #偏微分時の圧力変化
 VENT_ERR    = 1e-6        #換気回路網の許容残差
