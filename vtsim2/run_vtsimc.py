@@ -231,7 +231,7 @@ def make_calc(length, t_step, sn, vn, tn):
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
 
         if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  length)])             #コンダクタンス、行列設定可能
-        if nt['type'] == TN_SOLAR:      tn_solar_set.append([i, to_list(nt['ms'],    length)])             #日射熱取得率、行列設定可能
+        if nt['type'] == TN_SOLAR:      tn_solar_set.append([i, to_list(nt['ms'],    length)])              #日射熱取得率、行列設定可能
         if nt['type'] == TN_HEATER:     tn_h_inp_set.append([i, to_list(nt['h_inp'], length)])
         if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], 
                                                                  nt['rg'], 
