@@ -250,4 +250,4 @@ def make_calc(length, t_step, sn, vn, tn):
            sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
            sn_v_set, sn_capa_set, sn_m_set, sn_beta_set,\
            vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,\
-           tn_simple_set, tn_solar_set, tn_ground_set
+           tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set
