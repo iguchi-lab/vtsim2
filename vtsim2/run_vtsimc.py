@@ -41,6 +41,7 @@ TN_SIMPLE: int = 0              #熱回路網：単純熱回路
 TN_AIRCON: int = 1              #熱回路網：エアコン、熱量収支付け替え
 TN_SOLAR:  int = 2              #熱回路網：日射取得
 TN_GROUND: int = 3              #熱回路網：地盤
+TN_HEATER: int = 4              #熱回路網：発熱
 
 OPT_DF:    int = 0              #DataFrameを出力
 OPT_CSV:   int = 1              #上記に加え、csvファイルを出力
@@ -95,7 +96,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,\
     vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,\
     vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,\
-    tn_simple_set, tn_solar_set, tn_ground_set = make_calc(len(ix), t_step, sn, vn, tn)                 #計算データの作成
+    tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set = make_calc(len(ix), t_step, sn, vn, tn)                 #計算データの作成
 
     print('sts          : ', sts)
 
@@ -124,7 +125,7 @@ def run_calc(ix, sn, **kwargs):                                                 
                                      sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set,
                                      vn_v_set, vn_capa_set, vn_m_set, vn_beta_set,
                                      vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set,
-                                     tn_simple_set, tn_solar_set, tn_ground_set)                                            #計算
+                                     tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set)                                            #計算
     print('finish vtsim calc')
     e_time = time.time() - s_time
     print("calc time:{0}".format(e_time * 1000) + "[ms]")
@@ -186,13 +187,13 @@ def output_calc(opt, p, c, t, qv, qt1, qt2, ix, n_columns, v_columns, t_columns)
 def make_calc(length, t_step, sn, vn, tn):
     node = {}
 
-    nodes, v_nets, t_nets                             = [], [], []
-    sn_P_set, sn_C_set, sn_T_set                      = [], [], []
-    sn_h_sr_set, sn_h_inp_set                         = [], []
-    sn_v_set, sn_capa_set, sn_m_set, sn_beta_set      = [], [], [], []
-    vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set = [], [], [], []
-    vn_eta_set                                        = []
-    tn_simple_set, tn_solar_set, tn_ground_set        = [], [], []
+    nodes, v_nets, t_nets                                    = [], [], []
+    sn_P_set, sn_C_set, sn_T_set                             = [], [], []
+    sn_h_sr_set, sn_h_inp_set                                = [], []
+    sn_v_set, sn_capa_set, sn_m_set, sn_beta_set             = [], [], [], []
+    vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set        = [], [], [], []
+    vn_eta_set                                               = []
+    tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set = [], [], [], []
 
     for i, n in enumerate(sn):                                                                              #sn
         node[n['name']] = i                                                                                 #ノード番号
@@ -229,7 +230,8 @@ def make_calc(length, t_step, sn, vn, tn):
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
 
         if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  length)])             #コンダクタンス、行列設定可能
-        if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    length)])             #日射熱取得率、行列設定可能
+        if nt['type'] == TN_SOLAR:      tn_solar_set.append([i, to_list(nt['ms'],    length)])             #日射熱取得率、行列設定可能
+        if nt['type'] == TN_HEATER:     tn_h_inp_set.append([i, to_list(nt['h_inp'], length)])
         if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], 
                                                                  nt['rg'], 
                                                                  nt['phi_0'], 
