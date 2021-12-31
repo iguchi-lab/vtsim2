@@ -116,7 +116,8 @@ def run_calc(ix, sn, **kwargs):                                                 
 
     print('t_nets       : ', t_nets)
     print('tn_simple_set: ', tn_simple_set)
-    print('tn_solar_set ; ', tn_solar_set)
+    print('tn_solar_set: ',  tn_solar_set)
+    print('tn_h_inp_set:',   tn_h_inp_set)
     print('tn_ground_set: ', tn_ground_set)
 
     print('start vtsim calc')
