@@ -8,6 +8,7 @@ import time
 
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+from pandas.core.indexing import convert_from_missing_indexer_tuple
 
 import vtsimc as vtc
 import vtsim2.archenvlib as lib
@@ -20,6 +21,7 @@ STEP_P         = 1e-6           #偏微分時の圧力変化
 VENT_ERR       = 1e-6           #換気回路網の許容残差
 STEP_T         = 1e-6           #偏微分時の温度変化
 THRM_ERR       = 1e-6           #熱回路網の許容残差
+CONV_ERR       = 1e-6           #収束の許容誤差
 SOR_RATIO      = 0.9            #SOR法の緩和係数
 SOR_ERR        = 1e-6           #SOR法の許容残差
 
@@ -74,7 +76,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     inp = vtc.InputData()
 
     inp.sts    = kwargs['sts']    if 'sts' in kwargs else [SOLVE_LU, STEP_P, VENT_ERR, 
-                                                           STEP_T, THRM_ERR, 
+                                                           STEP_T, THRM_ERR, CONV_ERR,
                                                            SOR_RATIO, SOR_ERR]                             #計算ステータスの読み込み
     inp.length = len(ix)
     inp.t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000                          #t_stepの読み込み
