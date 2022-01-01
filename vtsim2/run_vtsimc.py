@@ -70,14 +70,14 @@ to_list = lambda v, length:                 [float(v)] * length if type(v) != li
 # define function
 ###############################################################################
 
-def run_calc(ix, sn, **kwargs):                                                                         #はじめに呼び出される関数
+def run_calc(ix, sn, **kwargs):                                                                            #はじめに呼び出される関数
     inp = vtc.InputData()
 
     inp.sts    = kwargs['sts']    if 'sts' in kwargs else [SOLVE_LU, STEP_P, VENT_ERR, 
-                                                        STEP_T, THRM_ERR, 
-                                                        SOR_RATIO, SOR_ERR]                             #計算ステータスの読み込み
+                                                           STEP_T, THRM_ERR, 
+                                                           SOR_RATIO, SOR_ERR]                             #計算ステータスの読み込み
     inp.length = len(ix)
-    inp.t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000                       #t_stepの読み込み
+    inp.t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000                          #t_stepの読み込み
 
     vn         = kwargs['vn']     if 'vn'  in kwargs else []                                               #vnの読み込み
     tn         = kwargs['tn']     if 'tn'  in kwargs else []                                               #tnの読み込み
@@ -104,8 +104,8 @@ def run_calc(ix, sn, **kwargs):                                                 
         if 'beta' in n:      sn_beta_set.append([i, to_list(n['beta'],  inp.length)])                       #濃度減少率、行列で設定可能
 
     for i, nt in enumerate(vn):                                                                             #vn
-        h1 = nt['h1'] if 'h1' in nt else 0.0                                                                #高さ1、行列設定不可
-        h2 = nt['h2'] if 'h2' in nt else 0.0                                                                #高さ2、行列設定不可
+        h1 = to_list(nt['h1'], inp.length) if 'h1' in nt else to_list(0.0, inp.length)                      #高さ1、行列設定不可
+        h2 = to_list(nt['h2'], inp.length) if 'h2' in nt else to_list(0.0, inp.length)                      #高さ2、行列設定不可
         v_nets.append([node[nt['name1']], node[nt['name2']], nt['type'], h1, h2])                           #ネットワークタイプ＆高さ
         
         if nt['type'] == VN_SIMPLE:     vn_simple_set.append([i, to_list(nt['alpha'], inp.length), 
