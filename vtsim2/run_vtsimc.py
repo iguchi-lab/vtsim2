@@ -73,21 +73,19 @@ to_list = lambda v, length:                 [float(v)] * length if type(v) != li
 def run_calc(ix, sn, **kwargs):                                                                         #はじめに呼び出される関数
     inp = vtc.InputData()
 
-    inp.sts = kwargs['sts']    if 'sts' in kwargs else [SOLVE_LU, 
-                                                        STEP_P, VENT_ERR, 
+    inp.sts    = kwargs['sts']    if 'sts' in kwargs else [SOLVE_LU, STEP_P, VENT_ERR, 
                                                         STEP_T, THRM_ERR, 
                                                         SOR_RATIO, SOR_ERR]                             #計算ステータスの読み込み
     inp.length = len(ix)
     inp.t_step = (ix[1] - ix[0]).seconds + (ix[1] - ix[0]).microseconds / 1000000                       #t_stepの読み込み
 
-    vn      = kwargs['vn']     if 'vn'  in kwargs else []                                               #vnの読み込み
-    tn      = kwargs['tn']     if 'tn'  in kwargs else []                                               #tnの読み込み
-    opt     = kwargs['output'] if 'output' in kwargs else OPT_GRAPH                                     #出力フラグ                        
+    vn         = kwargs['vn']     if 'vn'  in kwargs else []                                               #vnの読み込み
+    tn         = kwargs['tn']     if 'tn'  in kwargs else []                                               #tnの読み込み
+    opt        = kwargs['output'] if 'output' in kwargs else OPT_GRAPH                                     #出力フラグ                        
 
     node = {}
     nodes, v_nets, t_nets                                         = [], [], []
-    sn_P_set, sn_C_set, sn_T_set                                  = [], [], []
-    sn_h_sr_set, sn_h_inp_set                                     = [], []
+    sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set       = [], [], [], [], []
     sn_v_set, sn_capa_set, sn_m_set, sn_beta_set                  = [], [], [], []
     vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set = [], [], [], [], []
     tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set      = [], [], [], []
@@ -111,13 +109,13 @@ def run_calc(ix, sn, **kwargs):                                                 
         v_nets.append([node[nt['name1']], node[nt['name2']], nt['type'], h1, h2])                           #ネットワークタイプ＆高さ
         
         if nt['type'] == VN_SIMPLE:     vn_simple_set.append([i, to_list(nt['alpha'], inp.length), 
-                                                                     to_list(nt['area'],  inp.length)])     #単純開口、行列で設定可能
+                                                                 to_list(nt['area'],  inp.length)])         #単純開口、行列で設定可能
         if nt['type'] == VN_GAP:           vn_gap_set.append([i, to_list(nt['a'],     inp.length), 
-                                                                     to_list(nt['n'],     inp.length)])     #隙間、行列で設定可能
+                                                                 to_list(nt['n'],     inp.length)])         #隙間、行列で設定可能
         if nt['type'] == VN_FAN:           vn_fan_set.append([i, to_list(nt['qmax'],  inp.length), 
-                                                                     to_list(nt['pmax'],  inp.length), 
-                                                                     to_list(nt['q1'],    inp.length),
-                                                                     to_list(nt['p1'],    inp.length)])     #ファン、行列で設定可能
+                                                                 to_list(nt['pmax'],  inp.length), 
+                                                                 to_list(nt['q1'],    inp.length),
+                                                                 to_list(nt['p1'],    inp.length)])         #ファン、行列で設定可能
 
         if 'vol' in nt:                    vn_fix_set.append([i, to_list(nt['vol'],   inp.length)])         #風量固定値、行列で設定可能
         if 'eta' in nt:                    vn_eta_set.append([i, to_list(nt['eta'],   inp.length)])               
@@ -125,15 +123,11 @@ def run_calc(ix, sn, **kwargs):                                                 
 
     for i, nt in enumerate(tn):                                                                             #tn
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
-
         if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'], inp.length)])          #コンダクタンス、行列設定可能
-        if nt['type'] == TN_SOLAR:      tn_solar_set.append([i, to_list(nt['ms'],    inp.length)])          #日射熱取得率、行列設定可能
-        if nt['type'] == TN_HEATER:     tn_h_inp_set.append([i, to_list(nt['h_inp'], inp.length)])
-        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], 
-                                                                 nt['rg'], 
-                                                                 nt['phi_0'], 
-                                                                 nt['cof_r'], 
-                                                                 nt['cof_phi']])                            #地盤熱応答、行列設定不可
+        if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    inp.length)])         #日射熱取得率、行列設定可能
+        if nt['type'] == TN_HEATER:      tn_h_inp_set.append([i, to_list(nt['h_inp'], inp.length)])
+        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], nt['rg'], 
+                                                                 nt['phi_0'], nt['cof_r'], nt['cof_phi']])  #地盤熱応答、行列設定不可
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):                                                  #熱容量の設定のあるノード
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
@@ -143,8 +137,7 @@ def run_calc(ix, sn, **kwargs):                                                 
         tn_simple_set.append([len(tn) + i, to_list(n['capa'] / inp.t_step, inp.length)])                    #コンダクタンス（熱容量）
 
     inp.nodes, inp.v_nets, inp.t_nets                                                 = nodes, v_nets, t_nets
-    inp.sn_P_set, inp.sn_C_set, inp.sn_T_set                                          = sn_P_set, sn_C_set, sn_T_set 
-    inp.sn_h_sr_set, inp.sn_h_inp_set                                                 = sn_h_sr_set, sn_h_inp_set  
+    inp.sn_P_set, inp.sn_C_set, inp.sn_T_set, inp.sn_h_sr_set, inp.sn_h_inp_set       = sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set  
     inp.sn_v_set, inp.sn_capa_set, inp.sn_m_set, inp.sn_beta_set                      = sn_v_set, sn_capa_set, sn_m_set, sn_beta_set
     inp.vn_simple_set, inp.vn_gap_set, inp.vn_fix_set, inp.vn_fan_set, inp.vn_eta_set = vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set
     inp.tn_simple_set, inp.tn_solar_set, inp.tn_h_inp_set, inp.tn_ground_set          = tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set      
@@ -174,8 +167,8 @@ def run_calc(ix, sn, **kwargs):                                                 
     print('start vtsim calc')
     s_time = time.time()
     p, c, t, qv, qt1, qt2 = vtc.calc(inp)
-    print('finish vtsim calc')
     e_time = time.time() - s_time
+    print('finish vtsim calc')
     print("calc time:{0}".format(e_time * 1000) + "[ms]")
 
     node_swap = {v: k for k, v in node.items()}
@@ -183,7 +176,6 @@ def run_calc(ix, sn, **kwargs):                                                 
     v_columns = [str(i) + " " + node_swap[inp.v_nets[i][0]] + "->" + node_swap[inp.v_nets[i][1]] for i in range(len(inp.v_nets))]       #出力用カラムの作成（換気回路網）
     t_columns = [str(i) + " " + node_swap[inp.t_nets[i][0]] + "->" + node_swap[inp.t_nets[i][1]] for i in range(len(inp.t_nets))]       #出力用カラムの作成（熱回路網）
 
-    
     if len(v_columns) == 0: v_columns = [0]
     if len(t_columns) == 0: t_columns = [0]
 
