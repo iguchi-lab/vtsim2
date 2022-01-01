@@ -123,11 +123,12 @@ def run_calc(ix, sn, **kwargs):                                                 
 
     for i, nt in enumerate(tn):                                                                             #tn
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
-        if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'], inp.length)])          #コンダクタンス、行列設定可能
+        if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  inp.length)])         #コンダクタンス、行列設定可能
         if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    inp.length)])         #日射熱取得率、行列設定可能
         if nt['type'] == TN_HEATER:      tn_h_inp_set.append([i, to_list(nt['h_inp'], inp.length)])
-        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, nt['area'], nt['rg'], 
-                                                                 nt['phi_0'], nt['cof_r'], nt['cof_phi']])  #地盤熱応答、行列設定不可
+        if nt['type'] == TN_GROUND:     tn_ground_set.append([i, to_list(nt['area'],  inp.length),           
+                                                                 to_list(nt['rg'],    inp.length), 
+                                                                 nt['phi_0'], nt['cof_r'], nt['cof_phi']])  #地盤熱応答、行列設定不可（面積と断熱性能はOK）
         
     for i, n in enumerate([n for n in sn if 'capa' in n]):                                                  #熱容量の設定のあるノード
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
