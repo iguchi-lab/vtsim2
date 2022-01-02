@@ -136,7 +136,7 @@ def run_calc(ix, sn, **kwargs):                                                 
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
         nodes.append([SN_NONE, SN_NONE, SN_DLY])                                                            #計算フラグ
         sn_capa_set.append([node[d_node(n['name'])], node[n['name']]])                                      #熱容量の設定
-        sn_T_set.append([len(sn) + i, to_list(n['t'],     inp.length)])
+        sn_T_set.append([len(sn) + i, to_list(n['t'], inp.length)])
         t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワークの設定
         tn_simple_set.append([len(tn) + i, to_list(n['capa'] / inp.t_step, inp.length)])                    #コンダクタンス（熱容量）
 
