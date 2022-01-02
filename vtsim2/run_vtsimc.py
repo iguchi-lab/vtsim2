@@ -57,7 +57,8 @@ node = lambda name, v_flag, c_flag, t_flag: {'name':   name,
                                              'v_flag': v_flag, 'c_flag': c_flag, 't_flag': t_flag}      #ノードの設定
 net  = lambda name1, name2, tp:             {'name1': name1, 'name2': name2, 'type': tp}                #ネットワークの設定
 r_df = lambda fn:                           pd.read_csv(fn, index_col = 0, 
-                                                        parse_dates = True).fillna(method = 'bfill')    #csvファイルの読み込み
+                                                        parse_dates = True).fillna(method = 'bfill')\
+                                                                           .fillna(method = 'ffill')     #csvファイルの読み込み
 nc   = lambda id, v:                        np.array([v] * len(id))                                     #idの長さ分の値value
 nd   = lambda df, cl:                       np.array(df[cl])                                            #dfの列clを設定
 ix   = lambda length:                       pd.date_range(datetime(2021, 1, 1, 0, 0, 0), 
@@ -135,7 +136,7 @@ def run_calc(ix, sn, **kwargs):                                                 
         node[d_node(n['name'])] = len(sn) + i                                                               #時間遅れノードのノード番号
         nodes.append([SN_NONE, SN_NONE, SN_DLY])                                                            #計算フラグ
         sn_capa_set.append([node[d_node(n['name'])], node[n['name']]])                                      #熱容量の設定
-        sn_T_set.append([len(sn) + i, to_list(n['t'], inp.length)])
+        if 't' in n:    sn_T_set.append([len(sn) + i, to_list(n['t'], inp.length)])
         t_nets.append([node[n['name']], node[d_node(n['name'])], TN_SIMPLE])                                #ネットワークの設定
         tn_simple_set.append([len(tn) + i, to_list(n['capa'] / inp.t_step, inp.length)])                    #コンダクタンス（熱容量）
 
@@ -167,7 +168,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     print('tn_solar_set: ',  inp.tn_solar_set)
     print('tn_ground_set: ', inp.tn_ground_set)
     """
-    
+
     print('start vtsim calc')
     s_time = time.time()
     p, c, t, qv, qt1, qt2 = vtc.calc(inp)
