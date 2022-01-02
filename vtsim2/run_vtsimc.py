@@ -145,6 +145,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     inp.vn_simple_set, inp.vn_gap_set, inp.vn_fix_set, inp.vn_fan_set, inp.vn_eta_set = vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set
     inp.tn_simple_set, inp.tn_solar_set, inp.tn_ground_set                            = tn_simple_set, tn_solar_set, tn_ground_set      
 
+    """""
     print('sts          : ', inp.sts)
 
     print('nodes        : ', inp.nodes)
@@ -165,7 +166,8 @@ def run_calc(ix, sn, **kwargs):                                                 
     print('tn_simple_set: ', inp.tn_simple_set)
     print('tn_solar_set: ',  inp.tn_solar_set)
     print('tn_ground_set: ', inp.tn_ground_set)
-
+    """
+    
     print('start vtsim calc')
     s_time = time.time()
     p, c, t, qv, qt1, qt2 = vtc.calc(inp)
