@@ -127,7 +127,7 @@ def run_calc(ix, sn, **kwargs):                                                 
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
         if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  inp.length)])         #コンダクタンス、行列設定可能
         if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    inp.length)])         #日射熱取得率、行列設定可能
-        if nt['type'] == TN_HEATER:      tn_h_inp_set.append([i, to_list(nt['h_inp'], inp.length)])
+        #if nt['type'] == TN_HEATER:      tn_h_inp_set.append([i, to_list(nt['h_inp'], inp.length)])
         if nt['type'] == TN_GROUND:     tn_ground_set.append([i, to_list(nt['area'],  inp.length),           
                                                                  to_list(nt['rg'],    inp.length), 
                                                                  nt['phi_0'], nt['cof_r'], nt['cof_phi']])  #地盤熱応答、行列設定不可（面積と断熱性能はOK）
@@ -144,7 +144,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     inp.sn_P_set, inp.sn_C_set, inp.sn_T_set, inp.sn_h_sr_set, inp.sn_h_inp_set       = sn_P_set, sn_C_set, sn_T_set, sn_h_sr_set, sn_h_inp_set  
     inp.sn_v_set, inp.sn_capa_set, inp.sn_m_set, inp.sn_beta_set                      = sn_v_set, sn_capa_set, sn_m_set, sn_beta_set
     inp.vn_simple_set, inp.vn_gap_set, inp.vn_fix_set, inp.vn_fan_set, inp.vn_eta_set = vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set
-    inp.tn_simple_set, inp.tn_solar_set, inp.tn_h_inp_set, inp.tn_ground_set          = tn_simple_set, tn_solar_set, tn_h_inp_set, tn_ground_set      
+    inp.tn_simple_set, inp.tn_solar_set, inp.tn_ground_set          = tn_simple_set, tn_solar_set, tn_ground_set      
 
     print('sts          : ', inp.sts)
 
@@ -165,7 +165,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     print('t_nets       : ', inp.t_nets)
     print('tn_simple_set: ', inp.tn_simple_set)
     print('tn_solar_set: ',  inp.tn_solar_set)
-    print('tn_h_inp_set:',   inp.tn_h_inp_set)
+    #print('tn_h_inp_set:',   inp.tn_h_inp_set)
     print('tn_ground_set: ', inp.tn_ground_set)
 
     print('start vtsim calc')
