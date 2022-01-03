@@ -71,7 +71,8 @@ ix   = lambda length:                       pd.date_range(datetime(2021, 1, 1, 0
 d_node  = lambda name:                      name + '_c'                                                 #遅延ノードの名前作成
 
 #リストかnp.ndarrayでなければlength分の長さのリストにする
-to_list = lambda v, length:                 [float(v)] * length if type(v) != list and type(v) != np.ndarray else v  
+to_list = lambda v, length:             [float(v)] * length if type(v) != list and type(v) != np.ndarray else v  
+to_list_i = lambda v, length:           [int(v)] * length if type(v) != list and type(v) != np.ndarray else v  
 
 ###############################################################################
 # define function
@@ -131,7 +132,7 @@ def run_calc(ix, sn, **kwargs):                                                 
     for i, nt in enumerate(tn):                                                                             #tn
         t_nets.append([node[nt['name1']], node[nt['name2']], nt['type']])                                   #ネットワークタイプ
         if nt['type'] == TN_SIMPLE:     tn_simple_set.append([i, to_list(nt['cdtc'],  inp.length)])         #コンダクタンス、行列設定可能
-        if nt['type'] == TN_AIRCON:     tn_aircon_set.append([i, to_list(nt['ac_mode'], inp.length)])       #エアコン運転モード
+        if nt['type'] == TN_AIRCON:     tn_aircon_set.append([i, to_list_i(nt['ac_mode'], inp.length)])       #エアコン運転モード
         if nt['type'] == TN_SOLAR:       tn_solar_set.append([i, to_list(nt['ms'],    inp.length)])         #日射熱取得率、行列設定可能
         if nt['type'] == TN_GROUND:     tn_ground_set.append([i, to_list(nt['area'],  inp.length),           
                                                                  to_list(nt['rg'],    inp.length), 
