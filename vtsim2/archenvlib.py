@@ -132,6 +132,52 @@ def astro_sun_loc(idx, lat = '36 00 00.00', lon = '140 00 00.00', td = -0.5):
 
     return(df)
 
+def make_solar_df(df_i):
+    df_i = pd.concat([df_i, calc0_sun_loc(df_i.index)], axis = 1)
+
+    df_i['Kt'] = Kt(toMJ(df_i['IG']), df_i['hs'])
+    df_i['Id'] = Id(toMJ(df_i['IG']), df_i['Kt'])
+    df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])
+
+    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < 0), 'Ib_E'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']
+    df_i.loc[(df_i['hs'] > 0) & (-90 < df_i['AZs']) & (df_i['AZs'] < 90), 'Ib_S'] = df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
+    df_i.loc[(df_i['hs'] > 0) & (0 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_W'] = df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']
+    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < -90), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
+    df_i.loc[(df_i['hs'] > 0) & (  90 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
+    df_i.loc[df_i['hs'] > 0,  'Ib_H'] = df_i['Ib'] * df_i['cos_hs']
+    df_i['Id_s'] = df_i['Id'] * 0.5
+    df_i.loc[df_i['hs'] > 0, 'Id_r'] = (df_i['Id'] + df_i['Ib']) * df_i['sin_hs'] * 0.5 * 0.1
+
+    df_i['cos_E'] = -1 * df_i['cos_hs'] * df_i['sin_AZs']
+    df_i['eta_E'] = + 2.3920 * df_i['cos_E'] - 3.8636 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']\
+                    + 3.7568 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']\
+                    - 1.3965 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']
+
+    df_i['cos_S'] = df_i['cos_hs'] * df_i['cos_AZs']
+    df_i['eta_S'] = + 2.3920 * df_i['cos_S'] - 3.8636 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']\
+                    + 3.7568 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']\
+                    - 1.3965 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']
+
+    df_i['cos_W'] = df_i['cos_hs'] * df_i['sin_AZs']
+
+    df_i['eta_W'] = + 2.3920 * df_i['cos_W'] - 3.8636 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']\
+                    + 3.7568 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']\
+                    - 1.3965 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']
+
+    df_i['cos_N'] = -1 * df_i['cos_hs'] * df_i['cos_AZs']
+    df_i['eta_N'] = + 2.3920 * df_i['cos_N'] - 3.8636 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']\
+                    + 3.7568 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']\
+                    - 1.3965 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']
+
+    df_i['Ib_E_g'] = df_i['Ib_E'] * df_i['eta_E']
+    df_i['Ib_S_g'] = df_i['Ib_S'] * df_i['eta_S']
+    df_i['Ib_W_g'] = df_i['Ib_W'] * df_i['eta_W']
+    df_i['Ib_N_g'] = df_i['Ib_N'] * df_i['eta_N']
+    df_i['Id_s_g'] = df_i['Id_s'] * 0.808
+    df_i['Id_r_g'] = df_i['Id_r'] * 0.808
+
+    return(df_i)
+
 #calc PMV PPD
 calc_R  = lambda f_cl, t_cl, t_r:               3.96e-8 * f_cl * (math.pow(t_cl + 273, 4) - math.pow(t_r + 273, 4))
 calc_C  = lambda f_cl, h_c, t_cl, t_a:          f_cl * h_c * (t_cl - t_a)
