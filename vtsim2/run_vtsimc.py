@@ -172,9 +172,7 @@ def run_calc(ix, sn, **kwargs):                                                 
 
     print('t_nets       : ', inp.t_nets)
     print('tn_simple_set: ', inp.tn_simple_set)
-    """
     print('tn_aircon_set; ', inp.tn_aircon_set)
-    """
     print('tn_solar_set: ',  inp.tn_solar_set)
     print('tn_ground_set: ', inp.tn_ground_set)
     """
