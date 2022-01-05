@@ -178,7 +178,7 @@ def make_solar2(s_ib, s_id):
     df_i = pd.concat([s_ib, s_id, sun_loc(s_ib.index)], axis = 1)
     df_i = direc_solar(df_i['Ib'], df_i['Id'], 
                        df_i['sin_hs'], df_i['cos_hs'], df_i['hs'], 
-                       df_i['sin_AZs'], df_i['cos_AZs'])
+                       df_i['sin_AZs'], df_i['cos_AZs'], df_i['AZs'])
     return(df_i.fillna(0))
 
 #calc PMV PPD
