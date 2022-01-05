@@ -52,6 +52,7 @@ OPT_GRAPH: int = 2              #上記に加えグラフを描画
 AC_AUTO:    int = 0
 AC_HEATING: int = 1
 AC_COOLING: int = 2
+AC_STOP:    int = 3    
 
 ###############################################################################
 # define lambda
