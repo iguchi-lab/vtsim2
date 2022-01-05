@@ -150,7 +150,7 @@ def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZ
     df_i.loc[(df_i['hs'] > 0) & (0    < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_W'] =      df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']    #西面   W
     df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < -90), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #北面   N
     df_i.loc[(df_i['hs'] > 0) & (  90 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #北面   N
-    df_i.loc[df_i['hs'] > 0,  'Ib_H'] = df_i['Ib'] * df_i['cos_hs']                                                                         #水平面 H
+    df_i.loc[df_i['hs'] > 0,  'Ib_H'] = df_i['Ib'] * df_i['sin_hs']                                                                         #水平面 H
     df_i['Id_D'] = df_i['Id'] * 0.5                                                                                                         #拡散   D
     df_i.loc[df_i['hs'] > 0, 'Id_R'] = (df_i['Id'] + df_i['Ib']) * df_i['sin_hs'] * 0.5 * 0.1                                               #反射   R
 
@@ -160,6 +160,7 @@ def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZ
     df_i['Ib_S_g'] = df_i['Ib_S'] * eta(     df_i['cos_hs'] * df_i['cos_AZs'])                                                              #南面   S
     df_i['Ib_W_g'] = df_i['Ib_W'] * eta(     df_i['cos_hs'] * df_i['sin_AZs'])                                                              #西面   W
     df_i['Ib_N_g'] = df_i['Ib_N'] * eta( 1 * df_i['cos_hs'] * df_i['cos_AZs'])                                                              #北面   N
+    df_i['ib_H_g'] = df_i['Ib_H'] * eta(df_i['sin_hs'])                                                                                     #水平面 H
     df_i['Id_D_g'] = df_i['Id_D'] * 0.808                                                                                                   #拡散   D
     df_i['Id_R_g'] = df_i['Id_R'] * 0.808                                                                                                   #反射   R
 
