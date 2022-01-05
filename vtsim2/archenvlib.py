@@ -154,6 +154,8 @@ def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZ
     df_i['Id_D'] = df_i['Id'] * 0.5                                                                                                         #拡散   D
     df_i.loc[df_i['hs'] > 0, 'Id_R'] = (df_i['Id'] + df_i['Ib']) * df_i['sin_hs'] * 0.5 * 0.1                                               #反射   R
 
+    df_i.fillna(0)
+
     eta = lambda c: + 2.3920 * c -3.8636 * c * c * c + 3.7568 * c * c * c * c * c - 1.3968 * c * c * c * c * c * c * c 
 
     df_i['Ib_E_g'] = df_i['Ib_E'] * eta(-1 * df_i['cos_hs'] * df_i['sin_AZs'])                                                              #東面   E
