@@ -133,15 +133,17 @@ def astro_sun_loc(idx, lat = '36 00 00.00', lon = '140 00 00.00', td = -0.5):
     return(df)
 
 def sep_direct_diffuse(s_ig, s_hs):
-    df_i = pd.concat([s_ig, s_hs], columns = ['IG', 'hs'], axis = 1)
+    df_i = pd.concat([s_ig, s_hs], axis = 1)
+    df_i.columns = ['IG', 'hs']
+    
     df_i['Kt'] = Kt(toMJ(df_i['IG']), df_i['hs'])
     df_i['Id'] = Id(toMJ(df_i['IG']), df_i['Kt'])
     df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])   
     return(df_i)
 
 def direc_solar(s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs):
-    df_i = pd.concat([s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs], 
-                      columns = ['Ib', 'Id', 'cos_hs', 'sin_AZs', 'cos_AZs'], axis = 1)
+    df_i = pd.concat([s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs], axis = 1)
+    df_i.columns = ['Ib', 'Id', 'cos_hs', 'sin_AZs', 'cos_AZs']
 
     df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < 0),   'Ib_E'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']    #東面   E
     df_i.loc[(df_i['hs'] > 0) & (-90  < df_i['AZs']) & (df_i['AZs'] < 90),  'Ib_S'] =      df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #南面   S
