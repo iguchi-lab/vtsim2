@@ -136,9 +136,9 @@ def sep_direct_diffuse(s_ig, s_hs):
     df_i = pd.concat([s_ig, s_hs], axis = 1)
     df_i.columns = ['IG', 'hs']
     
-    df_i['Kt'] = Kt(toMJ(df_i['IG']), df_i['hs'])
-    df_i['Id'] = Id(toMJ(df_i['IG']), df_i['Kt'])
-    df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])   
+    df_i['Kt'] = Kt(df_i['IG'], df_i['hs'])
+    df_i['Id'] = Id(df_i['IG'], df_i['Kt'])
+    df_i['Ib'] = Ib(df_i['IG'], df_i['Id'], df_i['hs'])   
     return(df_i[['Kt', 'Id', 'Ib']])
 
 def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZs):
