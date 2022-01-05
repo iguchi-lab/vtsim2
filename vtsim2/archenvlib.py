@@ -163,9 +163,7 @@ def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZ
     df_i['Id_D_g'] = df_i['Id_D'] * 0.808                                                                                                   #拡散   D
     df_i['Id_R_g'] = df_i['Id_R'] * 0.808                                                                                                   #反射   R
 
-    df_i.fillna(0)
-
-    return(df_i)
+    return(df_i.fillna(0))
 
 def make_solar1(s_ig):
     df_i = pd.concat([s_ig, sun_loc(s_ig.index)], axis = 1)
@@ -173,14 +171,14 @@ def make_solar1(s_ig):
     df_i = direc_solar(df_i['Ib'], df_i['Id'],
                        df_i['sin_hs'], df_i['cos_hs'], df_i['hs'], 
                        df_i['sin_AZs'], df_i['cos_AZs'], df_i['AZs'])
-    return(df_i)
+    return(df_i.fillna(0))
 
 def make_solar2(s_ib, s_id):
     df_i = pd.concat([s_ib, s_id, sun_loc(s_ib.index)], axis = 1)
     df_i = direc_solar(df_i['Ib'], df_i['Id'], 
                        df_i['sin_hs'], df_i['cos_hs'], df_i['hs'], 
                        df_i['sin_AZs'], df_i['cos_AZs'])
-    return(df_i)
+    return(df_i.fillna(0))
 
 #calc PMV PPD
 calc_R  = lambda f_cl, t_cl, t_r:               3.96e-8 * f_cl * (math.pow(t_cl + 273, 4) - math.pow(t_r + 273, 4))
