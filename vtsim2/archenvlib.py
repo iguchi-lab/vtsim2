@@ -141,9 +141,9 @@ def sep_direct_diffuse(s_ig, s_hs):
     df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])   
     return(df_i)
 
-def direc_solar(s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs):
-    df_i = pd.concat([s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs], axis = 1)
-    df_i.columns = ['Ib', 'Id', 'cos_hs', 'sin_AZs', 'cos_AZs']
+def direc_solar(s_ib, s_id, s_hs, s_cos_hs, s_sin_AZs, s_cos_AZs):
+    df_i = pd.concat([s_ib, s_id, s_hs, s_cos_hs, s_sin_AZs, s_cos_AZs], axis = 1)
+    df_i.columns = ['Ib', 'Id', 'hs', 'cos_hs', 'sin_AZs', 'cos_AZs']
 
     df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < 0),   'Ib_E'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']    #東面   E
     df_i.loc[(df_i['hs'] > 0) & (-90  < df_i['AZs']) & (df_i['AZs'] < 90),  'Ib_S'] =      df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #南面   S
@@ -168,12 +168,12 @@ def direc_solar(s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs):
 def make_solar1(s_ig):
     df_i = pd.concat([s_ig, sun_loc(s_ig.index)], axis = 1)
     df_i = pd.concat([df_i, sep_direct_diffuse(s_ig, df_i['hs'])], axis = 1)
-    df_i = pd.concat([df_i, direc_solar(df_i['Ib'], df_i['Id'], df_i['cos_hs'], df_i['sin_AZs'], df_i['cos_AZs'])], axis = 1)
+    df_i = pd.concat([df_i, direc_solar(df_i['Ib'], df_i['Id'], df_i['hs'], df_i['cos_hs'], df_i['sin_AZs'], df_i['cos_AZs'])], axis = 1)
     return(df_i)
 
 def make_solar2(s_ib, s_id):
     df_i = pd.concat([s_ib, s_id, sun_loc(s_ib.index)], axis = 1)
-    df_i = pd.concat([df_i, direc_solar(df_i['Ib'], df_i['Id'], df_i['cos_hs'], df_i['sin_AZs'], df_i['cos_AZs'])], axis = 1)
+    df_i = pd.concat([df_i, direc_solar(df_i['Ib'], df_i['Id'], df_i['hs'], df_i['cos_hs'], df_i['sin_AZs'], df_i['cos_AZs'])], axis = 1)
     return(df_i)
 
 #calc PMV PPD
