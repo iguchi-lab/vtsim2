@@ -83,26 +83,26 @@ sin_hs  = lambda L, dd, tdt     : sin(L) * sin(dd) + cos(L) * cos(dd) * cos(tdt)
 sin_AZs = lambda dd, tdt, c_h   : cos(dd) * sin(tdt) / c_h                                                              #方位角の正弦
 cos_AZs = lambda s_h, L, dd, c_h: (s_h * sin(L) - sin(dd)) / (c_h * cos(L))                                             #方位角の余弦
 
-def calc0_sun_loc(idx, lat = 36.00, lon = 140.00, td = -0.5):
+def sun_loc(idx, lat = 36.00, lon = 140.00, td = -0.5):
     df = pd.DataFrame(index = idx)
-    df['N']       = [(i - idx[0]).days + 1.5 for i in idx]
-    df['H']       = idx.strftime("%H").astype('float64') + td
-    df['delta_d'] = delta_d(df['N'])
-    df['e_d']     = e_d(df['N'])
-    df['T_d_t']   = T_d_t(df['H'], df['e_d'], lon)
-    df['sin_hs']  = sin_hs(lat, df['delta_d'], df['T_d_t'])
-    df['cos_hs']  = np.sqrt(1 - np.power(df['sin_hs'], 2))
-    df['hs']      = np.degrees(np.arcsin(df['sin_hs']))
+    df['N']       = [(i - idx[0]).days + 1.5 for i in idx]                                                              #元日からの通し日数
+    df['H']       = idx.strftime("%H").astype('float64') + td                                                           #時刻
+    df['delta_d'] = delta_d(df['N'])                                                                                    #太陽の赤緯
+    df['e_d']     = e_d(df['N'])                                                                                        #太陽の均時差
+    df['T_d_t']   = T_d_t(df['H'], df['e_d'], lon)                                                                      #太陽の時角
+    df['sin_hs']  = sin_hs(lat, df['delta_d'], df['T_d_t'])                                                             #太陽高度の正弦　sin
+    df['cos_hs']  = np.sqrt(1 - np.power(df['sin_hs'], 2))                                                              #太陽高度の余弦　cos
+    df['hs']      = np.degrees(np.arcsin(df['sin_hs']))                                                                 #太陽高度　°
 
-    df['sin_AZs'] = sin_AZs(df['delta_d'], df['T_d_t'], df['cos_hs'])
-    df['cos_AZs'] = cos_AZs(df['sin_hs'], lat, df['delta_d'], df['cos_hs'])
+    df['sin_AZs'] = sin_AZs(df['delta_d'], df['T_d_t'], df['cos_hs'])                                                   #太陽方位角の正弦　sin
+    df['cos_AZs'] = cos_AZs(df['sin_hs'], lat, df['delta_d'], df['cos_hs'])                                             #太陽方位角の余弦　cos
 
     df.loc[(df['sin_AZs'] <   0) & (df['cos_AZs'] >  0), 'AZs'] = np.degrees(np.arctan(df['sin_AZs'] / df['cos_AZs']))
     df.loc[(df['sin_AZs'] >   0) & (df['cos_AZs'] >  0), 'AZs'] = np.degrees(np.arctan(df['sin_AZs'] / df['cos_AZs']))
     df.loc[(df['sin_AZs'] >   0) & (df['cos_AZs'] <  0), 'AZs'] = np.degrees(np.arctan(df['sin_AZs'] / df['cos_AZs'])) + 180
     df.loc[(df['sin_AZs'] <   0) & (df['cos_AZs'] <  0), 'AZs'] = np.degrees(np.arctan(df['sin_AZs'] / df['cos_AZs'])) - 180
     df.loc[(df['sin_AZs'] ==  1) & (df['cos_AZs'] == 0), 'AZs'] = 90
-    df.loc[(df['sin_AZs'] == -1) & (df['cos_AZs'] == 0), 'AZs'] = -90
+    df.loc[(df['sin_AZs'] == -1) & (df['cos_AZs'] == 0), 'AZs'] = -90                                                   #太陽方位角　°
 
     return(df)
 
@@ -132,50 +132,41 @@ def astro_sun_loc(idx, lat = '36 00 00.00', lon = '140 00 00.00', td = -0.5):
 
     return(df)
 
-def make_solar_df(df_i):
-    df_i = pd.concat([df_i, calc0_sun_loc(df_i.index)], axis = 1)
-
+def sep_direct_diffuse(s_ig, s_hs):
+    df_i = pd.concat([s_ig, s_hs], columns = ['IG', 'hs'], axis = 1)
     df_i['Kt'] = Kt(toMJ(df_i['IG']), df_i['hs'])
     df_i['Id'] = Id(toMJ(df_i['IG']), df_i['Kt'])
-    df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])
+    df_i['Ib'] = Ib(toMJ(df_i['IG']), df_i['Id'], df_i['hs'])   
+    return(df_i)
 
-    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < 0), 'Ib_E'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']
-    df_i.loc[(df_i['hs'] > 0) & (-90 < df_i['AZs']) & (df_i['AZs'] < 90), 'Ib_S'] = df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
-    df_i.loc[(df_i['hs'] > 0) & (0 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_W'] = df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']
-    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < -90), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
-    df_i.loc[(df_i['hs'] > 0) & (  90 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']
-    df_i.loc[df_i['hs'] > 0,  'Ib_H'] = df_i['Ib'] * df_i['cos_hs']
-    df_i['Id_s'] = df_i['Id'] * 0.5
-    df_i.loc[df_i['hs'] > 0, 'Id_r'] = (df_i['Id'] + df_i['Ib']) * df_i['sin_hs'] * 0.5 * 0.1
+def direc_solar(s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs):
+    df_i = pd.concat([s_ib, s_id, s_cos_hs, s_sin_AZs, s_cos_AZs], 
+                      columns = ['Ib', 'Id', 'cos_hs', 'sin_AZs', 'cos_AZs'], axis = 1)
 
-    df_i['cos_E'] = -1 * df_i['cos_hs'] * df_i['sin_AZs']
-    df_i['eta_E'] = + 2.3920 * df_i['cos_E'] - 3.8636 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']\
-                    + 3.7568 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']\
-                    - 1.3965 * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E'] * df_i['cos_E']
+    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < 0),   'Ib_E'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']    #東面   E
+    df_i.loc[(df_i['hs'] > 0) & (-90  < df_i['AZs']) & (df_i['AZs'] < 90),  'Ib_S'] =      df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #南面   S
+    df_i.loc[(df_i['hs'] > 0) & (0    < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_W'] =      df_i['Ib'] * df_i['cos_hs'] * df_i['sin_AZs']    #西面   W
+    df_i.loc[(df_i['hs'] > 0) & (-180 < df_i['AZs']) & (df_i['AZs'] < -90), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #北面   N
+    df_i.loc[(df_i['hs'] > 0) & (  90 < df_i['AZs']) & (df_i['AZs'] < 180), 'Ib_N'] = -1 * df_i['Ib'] * df_i['cos_hs'] * df_i['cos_AZs']    #北面   N
+    df_i.loc[df_i['hs'] > 0,  'Ib_H'] = df_i['Ib'] * df_i['cos_hs']                                                                         #水平面 H
+    df_i['Id_D'] = df_i['Id'] * 0.5                                                                                                         #拡散   D
+    df_i.loc[df_i['hs'] > 0, 'Id_R'] = (df_i['Id'] + df_i['Ib']) * df_i['sin_hs'] * 0.5 * 0.1                                               #反射   R
 
-    df_i['cos_S'] = df_i['cos_hs'] * df_i['cos_AZs']
-    df_i['eta_S'] = + 2.3920 * df_i['cos_S'] - 3.8636 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']\
-                    + 3.7568 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']\
-                    - 1.3965 * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S'] * df_i['cos_S']
+    eta = lambda c: + 2.3920 * c -3.8636 * c * c * c + 3.7568 * c * c * c * c * c - 1.3968 * c * c * c * c * c * c * c 
 
-    df_i['cos_W'] = df_i['cos_hs'] * df_i['sin_AZs']
+    df_i['Ib_E_g'] = df_i['Ib_E'] * eta(-1 * df_i['cos_hs'] * df_i['sin_AZs'])                                                              #東面   E
+    df_i['Ib_S_g'] = df_i['Ib_S'] * eta(     df_i['cos_hs'] * df_i['cos_AZs'])                                                              #南面   S
+    df_i['Ib_W_g'] = df_i['Ib_W'] * eta(     df_i['cos_hs'] * df_i['sin_AZs'])                                                              #西面   W
+    df_i['Ib_N_g'] = df_i['Ib_N'] * eta( 1 * df_i['cos_hs'] * df_i['cos_AZs'])                                                              #北面   N
+    df_i['Id_s_g'] = df_i['Id_s'] * 0.808                                                                                                   #拡散   D
+    df_i['Id_r_g'] = df_i['Id_r'] * 0.808                                                                                                   #反射   R
 
-    df_i['eta_W'] = + 2.3920 * df_i['cos_W'] - 3.8636 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']\
-                    + 3.7568 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']\
-                    - 1.3965 * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W'] * df_i['cos_W']
+    return(df_i)
 
-    df_i['cos_N'] = -1 * df_i['cos_hs'] * df_i['cos_AZs']
-    df_i['eta_N'] = + 2.3920 * df_i['cos_N'] - 3.8636 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']\
-                    + 3.7568 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']\
-                    - 1.3965 * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N'] * df_i['cos_N']
-
-    df_i['Ib_E_g'] = df_i['Ib_E'] * df_i['eta_E']
-    df_i['Ib_S_g'] = df_i['Ib_S'] * df_i['eta_S']
-    df_i['Ib_W_g'] = df_i['Ib_W'] * df_i['eta_W']
-    df_i['Ib_N_g'] = df_i['Ib_N'] * df_i['eta_N']
-    df_i['Id_s_g'] = df_i['Id_s'] * 0.808
-    df_i['Id_r_g'] = df_i['Id_r'] * 0.808
-
+def make_solar(s_ig):
+    df_i = pd.concat([s_ig, sun_loc(s_ig.idx)], axis = 1)
+    df_i = pd.concat([df_i, sep_direct_diffuse(s_ig, df_i['hs'])], axis = 1)
+    df_i = pd.concat([df_i, direc_solar(df_i['Ib'], df_i['Id'], df_i['cos_hs'], df_i['sin_AZs'], df_i['cos_AZs'])], axis = 1)
     return(df_i)
 
 #calc PMV PPD
