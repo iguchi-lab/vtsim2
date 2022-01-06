@@ -51,8 +51,7 @@ Kt = lambda IG, alt:     IG / (Wh_to_MJ(Solar_I) * np.sin(np.radians(alt)))     
 def Id(IG, kt):                                                                                 #水平面拡散日射量
     s_Id = np.zeros(len(kt))
     for i, k in enumerate(kt):
-        if   k <  0.0:                  s_Id[i] = 0.0
-        elif k <= 0.22:                 s_Id[i] = IG[i] * (1 - 0.09 * k)
+        if   k <= 0.22:                 s_Id[i] = IG[i] * (1 - 0.09 * k)
         elif (0.22 < k) & (k <= 0.80):  s_Id[i] = IG[i] * (0.9511 -  0.1604 * k \
                                                                   +  4.388  * np.power(k, 2) \
                                                                   - 16.638  * np.power(k, 3) \
