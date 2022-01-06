@@ -9,7 +9,7 @@ Vap_Cp   = 1.846                                                                
 Vap_L    = 2501.1                                                                       #水蒸気の蒸発潜熱   KJ / (m3・K)
 
 Sigma    = 4.88e-8                                                                      #ステファン・ボルツマン定数
-Solar_I = 1365                                                                          #太陽定数           kW / m2
+Solar_I = 1365                                                                          #太陽定数           W / m2
 
 #lambda function
 #湿り空気の状態
@@ -19,7 +19,8 @@ T      = lambda t: t + 273.15                                                   
 
 T_dash = lambda t: T(100.0) / T(t)                                                      #飽和水蒸気の計算に用いる温度
 
-toMJ   = lambda v: v * 3.6 / 1000                                                       #kWh->MJ
+Wh_to_MJ   = lambda v: v * 3.6 / 1000                                                   #Wh->MJ
+MJ_to_Wh   = lambda v: v * 1000 / 3.6
 
 f  = lambda t:    - 7.90295 * (T_dash(t) - 1) \
                   + 5.02808 * np.log10(T_dash(t)) \
@@ -44,7 +45,7 @@ rn = lambda t, h: (94.21 + 39.06 * np.sqrt(e(t, h) / 100) \
                    - 0.85 * Sigma * np.power(T(t), 4)) * 4.187 / 1000                           #夜間放射 MJ/m2
 
 #直散分離 erbs法
-Kt = lambda IG, alt:     IG / (toMJ(Solar_I) * np.sin(np.radians(alt)))                         #晴天指数
+Kt = lambda IG, alt:     IG / (Wh_to_MJ(Solar_I) * np.sin(np.radians(alt)))                               #晴天指数
 
 def Id(IG, kt):                                                                                 #水平面拡散日射量
     s_Id = np.zeros(len(kt))
@@ -136,9 +137,9 @@ def sep_direct_diffuse(s_ig, s_hs):
     df_i = pd.concat([s_ig, s_hs], axis = 1)
     df_i.columns = ['IG', 'hs']
     
-    df_i['Kt'] = Kt(df_i['IG'], df_i['hs'])
-    df_i['Id'] = Id(df_i['IG'], df_i['Kt'])
-    df_i['Ib'] = Ib(df_i['IG'], df_i['Id'], df_i['hs'])   
+    df_i['Kt'] = Kt(Wh_to_MJ(df_i['IG']), df_i['hs'])
+    df_i['Id'] = MJ_to_Wh(Id(Wh_to_MJ(df_i['IG']), df_i['Kt']))
+    df_i['Ib'] = MJ_to_Wh(Ib(Wh_to_MJ(df_i['IG']), Wh_to_MJ(df_i['Id'], df_i['hs'])))   
     return(df_i[['Kt', 'Id', 'Ib']])
 
 def direc_solar(s_ib, s_id, s_sin_hs, s_cos_hs, s_hs, s_sin_AZs, s_cos_AZs, s_AZs):
