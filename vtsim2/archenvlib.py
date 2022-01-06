@@ -138,7 +138,7 @@ def sep_direct_diffuse(s_ig, s_hs):
     df_i.columns = ['IG', 'hs']
     
     df_i['Kt'] = Kt(Wh_to_MJ(df_i['IG']), df_i['hs'])
-    df_i['Id'] = MJ_to_Wh(Id(Wh_to_MJ(df_i['IG']), df_i['Kt']))
+    df_i['Id'] = MJ_to_Wh(Id(Wh_to_MJ(df_i['IG']), df_i['Kt'])) if df_i['Kt'] > 0.0 else 0.0
     df_i['Ib'] = MJ_to_Wh(Ib(Wh_to_MJ(df_i['IG']), Wh_to_MJ(df_i['Id'], df_i['hs'])))   
     return(df_i[['Kt', 'Id', 'Ib']])
 
