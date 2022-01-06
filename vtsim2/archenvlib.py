@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import math
+import datetime
 
 #define const
 Air_Cp   = 1.005                                                                        #空気の定圧比熱　   kJ / (m3・K)
@@ -87,7 +88,7 @@ cos_AZs = lambda s_h, L, dd, c_h: (s_h * sin(L) - sin(dd)) / (c_h * cos(L))     
 
 def sun_loc(idx, lat = 36.00, lon = 140.00, td = -0.5):
     df = pd.DataFrame(index = idx)
-    df['N']       = [(i - idx[0]).days + 1.5 for i in idx]                                                              #元日からの通し日数
+    df['N']       = [(i - datetime.datetime(i[0].year, 1, 1)).days + 1.5 for i in idx]                                  #元日からの通し日数
     df['H']       = idx.strftime("%H").astype('float64') + td                                                           #時刻
     df['delta_d'] = delta_d(df['N'])                                                                                    #太陽の赤緯
     df['e_d']     = e_d(df['N'])                                                                                        #太陽の均時差
