@@ -154,30 +154,6 @@ def run_calc(ix, sn, **kwargs):                                                 
     inp.vn_simple_set, inp.vn_gap_set, inp.vn_fix_set, inp.vn_fan_set, inp.vn_eta_set = vn_simple_set, vn_gap_set, vn_fix_set, vn_fan_set, vn_eta_set
     inp.tn_simple_set, inp.tn_aircon_set, inp.tn_solar_set, inp.tn_ground_set         = tn_simple_set, tn_aircon_set, tn_solar_set, tn_ground_set      
 
-    """"
-    print('sts          : ', inp.sts)
-
-    print('nodes        : ', inp.nodes)
-    print('sn_P_set     : ', inp.sn_P_set)
-    print('sn_C_set     : ', inp.sn_C_set)
-    print('sn_T_set     : ', inp.sn_T_set)
-    print('sn_h_sr      : ', inp.sn_h_sr_set)
-    print('sn_h_inp     : ', inp.sn_h_inp_set)
-
-    print('v_nets       : ', inp.v_nets)
-    print('vn_simple_set: ', inp.vn_simple_set)
-    print('vn_gap_set   : ', inp.vn_gap_set)
-    print('vn_fix_set   : ', inp.vn_fix_set)
-    print('vn_fan_set   : ', inp.vn_fan_set)
-    print('vn_eta_set   : ', inp.vn_eta_set)
-
-    print('t_nets       : ', inp.t_nets)
-    print('tn_simple_set: ', inp.tn_simple_set)
-    print('tn_aircon_set; ', inp.tn_aircon_set)
-    print('tn_solar_set: ',  inp.tn_solar_set)
-    print('tn_ground_set: ', inp.tn_ground_set)
-    """
-
     print('start vtsim calc')
     s_time = time.time()
     p, c, t, qv, qt1, qt2 = vtc.calc(inp)
